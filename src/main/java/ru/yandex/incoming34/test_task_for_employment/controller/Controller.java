@@ -10,6 +10,7 @@ import ru.yandex.incoming34.test_task_for_employment.service.ValidationService;
 import ru.yandex.incoming34.test_task_for_employment.structures.ServiceAMessage;
 
 import java.util.Objects;
+import java.util.Properties;
 
 @RestController
 @RequestMapping("/api/message_from_service_a")
