@@ -23,6 +23,7 @@ public class Controller {
 
     @PostMapping(value = "/new_message")
     public AdaptedMessage handleMessageFromServiceA(@RequestBody ServiceAMessage serviceAMessage) throws IOException {
+        System.out.println(serviceAMessage);
         validationService.throwExceptionIfInvalid(serviceAMessage);
         return mainService.callServiceB(serviceAMessage);
     }
