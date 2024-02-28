@@ -9,7 +9,7 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>ru.yandex.incoming34</groupId>
-    <artifactId>test_task_for_employment</artifactId>
+    <artifactId>adapter</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>test_task_for_employment</name>
     <description>Test task for employment</description>
