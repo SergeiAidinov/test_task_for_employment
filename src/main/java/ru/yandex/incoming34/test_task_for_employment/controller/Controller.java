@@ -7,8 +7,9 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.incoming34.test_task_for_employment.service.MainService;
 import ru.yandex.incoming34.test_task_for_employment.service.ValidationService;
 import ru.yandex.incoming34.test_task_for_employment.structures.ServiceAMessage;
-import ru.yandex.incoming34.test_task_for_employment.structures.ServiceBMessage;
+import ru.yandex.incoming34.test_task_for_employment.structures.AdaptedMessage;
 
+import java.io.IOException;
 import java.util.Objects;
 
 @RestController
@@ -21,12 +22,12 @@ public class Controller {
     private final ValidationService validationService;
 
     @PostMapping(value = "/new_message")
-    public ServiceBMessage handleMessageFromServiceA(@RequestBody ServiceAMessage serviceAMessage) {
+    public AdaptedMessage handleMessageFromServiceA(@RequestBody ServiceAMessage serviceAMessage) throws IOException {
         validationService.throwExceptionIfInvalid(serviceAMessage);
         return mainService.callServiceB(serviceAMessage);
     }
 
-    @ExceptionHandler(value = {RuntimeException.class})
+    @ExceptionHandler(value = Exception.class)
     private ResponseEntity<String> handleException(RuntimeException exception) {
         return new ResponseEntity<>(Objects.nonNull(exception.getMessage()) ? exception.getMessage() : "Unknown Error", HttpStatus.OK);
     }
