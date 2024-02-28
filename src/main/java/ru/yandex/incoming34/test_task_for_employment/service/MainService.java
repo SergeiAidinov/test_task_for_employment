@@ -29,9 +29,17 @@ public class MainService {
     private final RestTemplate dummyRestTemplate;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AdaptedMessage callServiceB(ServiceAMessage serviceAMessage) throws IOException {
-        InputStream responseStream = prepareConnection(serviceAMessage.getCoordinates()).getInputStream();
-        JsonNode root = objectMapper.readTree(responseStream);
+    public AdaptedMessage callServiceB(ServiceAMessage serviceAMessage) {
+        HttpURLConnection conn = prepareConnection(serviceAMessage.getCoordinates());
+        InputStream responseStream = null;
+        JsonNode root = null;
+        try{
+            responseStream = conn.getInputStream();
+            root = objectMapper.readTree(responseStream);
+        } catch (Exception exception) {
+            System.out.println(exception);
+            throw new RuntimeException("Не удалось получить информацию о погоде");
+        }
         String temperature = root.get("main").get("temp").asText();
         AdaptedMessage adaptedMessage = adaptMessage(serviceAMessage, temperature);
         dummyRestTemplate.put("http://localhost:8080//api//adapted_message//new_message", adaptedMessage);
