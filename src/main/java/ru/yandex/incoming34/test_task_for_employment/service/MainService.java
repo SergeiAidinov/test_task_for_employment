@@ -26,7 +26,7 @@ public class MainService {
 
 
     private final Properties properties;
-    private final RestTemplate dummyRestTemplate;
+    private final RestTemplate dummyRestTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AdaptedMessage callServiceB(ServiceAMessage serviceAMessage) {
