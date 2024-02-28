@@ -30,11 +30,11 @@ public class MainService {
     private final ObjectMapper objectMapper = new ObjectMapper();
 
     public AdaptedMessage callServiceB(ServiceAMessage serviceAMessage) {
-        HttpURLConnection conn = prepareConnection(serviceAMessage.getCoordinates());
+        HttpURLConnection connection = prepareConnection(serviceAMessage.getCoordinates());
         InputStream responseStream = null;
         JsonNode root = null;
-        try{
-            responseStream = conn.getInputStream();
+        try {
+            responseStream = connection.getInputStream();
             root = objectMapper.readTree(responseStream);
         } catch (Exception exception) {
             System.out.println(exception);
@@ -51,7 +51,7 @@ public class MainService {
         return new AdaptedMessage(serviceAMessage.getMsg(), LocalDateTime.now(), temperature);
     }
 
-    private HttpURLConnection prepareConnection(Coordinates coordinates){
+    private HttpURLConnection prepareConnection(Coordinates coordinates) {
         String request = new StringBuilder(properties.getProperty("apiHttp"))
                 .append("?")
                 .append("lat=")
@@ -64,14 +64,9 @@ public class MainService {
                 .append("units=metric")
                 .toString();
         URL url = null;
-        try {
-            url = new URL(request);
-        } catch (MalformedURLException e) {
-            throw new RuntimeException(e);
-        }
-
         HttpURLConnection connection = null;
         try {
+            url = new URL(request);
             connection = (HttpURLConnection) url.openConnection();
         } catch (IOException e) {
             throw new RuntimeException(e);
