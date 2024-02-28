@@ -19,6 +19,8 @@ public class Config {
     private String appId;
     @Value("${app.apihttp}")
     private String apiHttp;
+    @Value("${app.dummyurl}")
+    private String dummyUrl;
 
 
     @Bean
@@ -31,6 +33,7 @@ public class Config {
         Properties properties = new Properties();
         properties.setProperty("appId", appId);
         properties.setProperty("apiHttp", apiHttp);
+        properties.setProperty("dummyUrl", dummyUrl);
         return properties;
     }
 

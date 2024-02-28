@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.Properties;
@@ -42,9 +43,12 @@ public class MainService {
         }
         String temperature = root.get("main").get("temp").asText();
         AdaptedMessage adaptedMessage = adaptMessage(serviceAMessage, temperature);
-        dummyRestTemplate.put("http://localhost:8080//api//adapted_message//new_message", adaptedMessage);
+        try {
+            dummyRestTemplate.put(properties.getProperty("dummyUrl"), adaptedMessage);
+        } catch (Exception e) {
+            throw new RuntimeException("Не удалось вызвать Service B");
+        }
         return adaptedMessage;
-
     }
 
     private AdaptedMessage adaptMessage(ServiceAMessage serviceAMessage, String temperature) {
