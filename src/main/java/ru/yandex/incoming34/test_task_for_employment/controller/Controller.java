@@ -9,7 +9,6 @@ import ru.yandex.incoming34.test_task_for_employment.service.ValidationService;
 import ru.yandex.incoming34.test_task_for_employment.structures.AdaptedMessage;
 import ru.yandex.incoming34.test_task_for_employment.structures.ServiceAMessage;
 
-import java.io.IOException;
 import java.util.Objects;
 
 @RestController
@@ -22,10 +21,10 @@ public class Controller {
     private final ValidationService validationService;
 
     @PostMapping(value = "/new_message")
-    public AdaptedMessage handleMessageFromServiceA(@RequestBody ServiceAMessage serviceAMessage) throws IOException {
+    public AdaptedMessage handleMessageFromServiceA(@RequestBody ServiceAMessage serviceAMessage) {
         System.out.println(serviceAMessage);
         validationService.throwExceptionIfInvalid(serviceAMessage);
-        return mainService.callServiceB(serviceAMessage);
+        return mainService.handleMessageFromServiceA(serviceAMessage);
     }
 
     @ExceptionHandler(value = Exception.class)
