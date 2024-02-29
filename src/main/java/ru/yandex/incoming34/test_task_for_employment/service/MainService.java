@@ -55,10 +55,8 @@ public class MainService {
         } finally {
             connection.disconnect();
         }
-        return findNode(root, new ArrayList<>(nodeList));
+        return findNode(root, nodeList);
     }
-
-
 
     private AdaptedMessage adaptMessage(ServiceAMessage serviceAMessage, String temperature) {
         return new AdaptedMessage(serviceAMessage.getMsg(), LocalDateTime.now(), temperature);
