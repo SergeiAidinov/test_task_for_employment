@@ -3,10 +3,7 @@ package ru.yandex.incoming34.test_task_for_employment.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 import org.springframework.web.client.RestTemplate;
 import ru.yandex.incoming34.test_task_for_employment.structures.Coordinates;
 import ru.yandex.incoming34.test_task_for_employment.structures.ServiceAMessage;
@@ -15,10 +12,10 @@ import ru.yandex.incoming34.test_task_for_employment.structures.AdaptedMessage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.time.LocalDateTime;
+import java.util.Objects;
+import java.util.Optional;
 import java.util.Properties;
 
 @Service
@@ -30,8 +27,24 @@ public class MainService {
     private final RestTemplate dummyRestTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public AdaptedMessage callServiceB(ServiceAMessage serviceAMessage) {
-        HttpURLConnection connection = prepareConnection(serviceAMessage.getCoordinates());
+    public Optional<AdaptedMessage> callServiceB(ServiceAMessage serviceAMessage) {
+        Optional<String> temperatureOptional = requestTemperature(serviceAMessage.getCoordinates());
+        Optional<AdaptedMessage> adaptedMessageOptional = temperatureOptional.map(temperature -> adaptMessage(serviceAMessage, temperature));
+        adaptedMessageOptional.ifPresentOrElse(adaptedMessage -> {
+            try {
+                dummyRestTemplate.put(properties.getProperty("dummyUrl"), adaptedMessage);
+            } catch (Exception e) {
+                throw new RuntimeException("Не удалось вызвать Service B");
+            }
+        }, () -> {
+            throw new RuntimeException("qqq");
+        });
+        return adaptedMessageOptional;
+    }
+
+    private Optional<String> requestTemperature(Coordinates coordinates) {
+
+        HttpURLConnection connection = prepareConnection(coordinates);
         InputStream responseStream = null;
         JsonNode root = null;
         try {
@@ -41,14 +54,10 @@ public class MainService {
             System.out.println(exception);
             throw new RuntimeException("Не удалось получить информацию о погоде");
         }
-        String temperature = root.get("main").get("temp").asText();
-        AdaptedMessage adaptedMessage = adaptMessage(serviceAMessage, temperature);
-        try {
-            dummyRestTemplate.put(properties.getProperty("dummyUrl"), adaptedMessage);
-        } catch (Exception e) {
-            throw new RuntimeException("Не удалось вызвать Service B");
-        }
-        return adaptedMessage;
+        return Objects.nonNull(root.get("main").get("temp1")) ?
+                Optional.ofNullable(root.get("main").get("temp").asText())
+                : Optional.empty();
+
     }
 
     private AdaptedMessage adaptMessage(ServiceAMessage serviceAMessage, String temperature) {

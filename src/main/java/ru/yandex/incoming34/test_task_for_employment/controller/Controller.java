@@ -11,6 +11,7 @@ import ru.yandex.incoming34.test_task_for_employment.structures.AdaptedMessage;
 
 import java.io.IOException;
 import java.util.Objects;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/message_from_service_a")
@@ -22,7 +23,7 @@ public class Controller {
     private final ValidationService validationService;
 
     @PostMapping(value = "/new_message")
-    public AdaptedMessage handleMessageFromServiceA(@RequestBody ServiceAMessage serviceAMessage) throws IOException {
+    public Optional<AdaptedMessage> handleMessageFromServiceA(@RequestBody ServiceAMessage serviceAMessage) throws IOException {
         System.out.println(serviceAMessage);
         validationService.throwExceptionIfInvalid(serviceAMessage);
         return mainService.callServiceB(serviceAMessage);
