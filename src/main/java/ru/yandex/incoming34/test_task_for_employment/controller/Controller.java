@@ -1,5 +1,6 @@
 package ru.yandex.incoming34.test_task_for_employment.controller;
 
+import io.swagger.v3.oas.annotations.Operation;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,6 +22,7 @@ public class Controller {
     private final ValidationService validationService;
 
     @PostMapping(value = "/new_message")
+    @Operation(description = "Эндпойнт, вызываемый гипотетическим Сервисом А, и принимающий от него сообщения для последующей обработки Адаптером.")
     public AdaptedMessage handleMessageFromServiceA(@RequestBody ServiceAMessage serviceAMessage) {
         System.out.println(serviceAMessage);
         validationService.throwExceptionIfInvalid(serviceAMessage);
