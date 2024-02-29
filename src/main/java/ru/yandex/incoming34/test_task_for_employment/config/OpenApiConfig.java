@@ -23,7 +23,8 @@ public class OpenApiConfig {
 
     @Bean
     Info info() {
-        return new Info().title("Тестовое задание middle Java. Автор: Айдинов Сергей").description("Test project")
+        return new Info().title("Тестовое задание middle Java. Автор: Айдинов Сергей")
+                .description("Информация о погоде запрашивается с сайта https://openweathermap.org/")
                 .version(componentVersion()).contact(contact());
     }
 
