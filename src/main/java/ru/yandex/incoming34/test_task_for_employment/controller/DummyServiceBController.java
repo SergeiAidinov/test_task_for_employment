@@ -4,7 +4,7 @@ import org.springframework.web.bind.annotation.*;
 import ru.yandex.incoming34.test_task_for_employment.structures.AdaptedMessage;
 
 @RestController
-@RequestMapping("/api/adapted_message")
+@RequestMapping("dummy_service_b/api/adapted_message")
 public class DummyServiceBController {
 
     @PutMapping(value = "/new_message")

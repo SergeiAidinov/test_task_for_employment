@@ -27,9 +27,9 @@ public class MainService {
     private final RestTemplate dummyRestTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    public Optional<AdaptedMessage> callServiceB(ServiceAMessage serviceAMessage) {
-        Optional<String> temperatureOptional = requestTemperature(serviceAMessage.getCoordinates());
-        Optional<AdaptedMessage> adaptedMessageOptional = temperatureOptional.map(temperature -> adaptMessage(serviceAMessage, temperature));
+    public AdaptedMessage callServiceB(ServiceAMessage serviceAMessage) {
+        Optional<AdaptedMessage> adaptedMessageOptional = requestTemperature(serviceAMessage.getCoordinates())
+                .map(temperature -> adaptMessage(serviceAMessage, temperature));
         adaptedMessageOptional.ifPresentOrElse(adaptedMessage -> {
             try {
                 dummyRestTemplate.put(properties.getProperty("dummyUrl"), adaptedMessage);
@@ -37,16 +37,15 @@ public class MainService {
                 throw new RuntimeException("Не удалось вызвать Service B");
             }
         }, () -> {
-            throw new RuntimeException("qqq");
+            throw new RuntimeException("Не удалось получить значение температуры");
         });
-        return adaptedMessageOptional;
+        return adaptedMessageOptional.get();
     }
 
     private Optional<String> requestTemperature(Coordinates coordinates) {
-
         HttpURLConnection connection = prepareConnection(coordinates);
-        InputStream responseStream = null;
-        JsonNode root = null;
+        InputStream responseStream;
+        JsonNode root;
         try {
             responseStream = connection.getInputStream();
             root = objectMapper.readTree(responseStream);
@@ -54,7 +53,7 @@ public class MainService {
             System.out.println(exception);
             throw new RuntimeException("Не удалось получить информацию о погоде");
         }
-        return Objects.nonNull(root.get("main").get("temp1")) ?
+        return Objects.nonNull(root.get("main").get("temp")) ?
                 Optional.ofNullable(root.get("main").get("temp").asText())
                 : Optional.empty();
 
@@ -76,8 +75,8 @@ public class MainService {
                 .append("&lang=ru&")
                 .append("units=metric")
                 .toString();
-        URL url = null;
-        HttpURLConnection connection = null;
+        URL url;
+        HttpURLConnection connection;
         try {
             url = new URL(request);
             connection = (HttpURLConnection) url.openConnection();
