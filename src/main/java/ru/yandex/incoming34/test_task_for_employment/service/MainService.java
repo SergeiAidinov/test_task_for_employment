@@ -14,9 +14,9 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.Objects;
-import java.util.Optional;
-import java.util.Properties;
+import java.util.*;
+
+import static ru.yandex.incoming34.test_task_for_employment.utils.Utils.findNode;
 
 @Service
 @AllArgsConstructor
@@ -24,6 +24,7 @@ public class MainService {
 
 
     private final Properties properties;
+    private final List<String> nodeList;
     private final RestTemplate dummyRestTemplate = new RestTemplate();
     private final ObjectMapper objectMapper = new ObjectMapper();
 
@@ -54,11 +55,10 @@ public class MainService {
         } finally {
             connection.disconnect();
         }
-        return Objects.nonNull(root.get("main").get("temp")) ?
-                Optional.ofNullable(root.get("main").get("temp").asText())
-                : Optional.empty();
-
+        return findNode(root, new ArrayList<>(nodeList));
     }
+
+
 
     private AdaptedMessage adaptMessage(ServiceAMessage serviceAMessage, String temperature) {
         return new AdaptedMessage(serviceAMessage.getMsg(), LocalDateTime.now(), temperature);

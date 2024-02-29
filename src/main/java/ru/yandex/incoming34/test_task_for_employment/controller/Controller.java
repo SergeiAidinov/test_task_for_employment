@@ -26,7 +26,6 @@ public class Controller {
     @PostMapping(value = "/new_message")
     @Operation(description = "Эндпойнт, вызываемый гипотетическим Сервисом А, и принимающий от него сообщения для последующей обработки Адаптером.")
     public AdaptedMessage handleMessageFromServiceA(@RequestBody ServiceAMessage serviceAMessage) {
-        System.out.println(serviceAMessage);
         validationService.throwExceptionIfInvalid(serviceAMessage);
         return mainService.handleMessageFromServiceA(serviceAMessage);
     }

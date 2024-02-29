@@ -1,6 +1,7 @@
 package ru.yandex.incoming34.test_task_for_employment.config;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
@@ -18,11 +19,19 @@ public class Config {
     private String apiHttp;
     @Value("${app.dummyurl}")
     private String dummyUrl;
+    @Value("${app.nodes}")
+    private List<String> nodeList;
 
 
     @Bean
     public List<String> supportedlanguages(){
+
         return langList;
+    }
+
+    @Bean
+    public List<String> nodeList(){
+        return nodeList;
     }
 
     @Bean
