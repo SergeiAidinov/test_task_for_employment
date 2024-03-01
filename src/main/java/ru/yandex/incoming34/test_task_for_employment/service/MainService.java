@@ -1,22 +1,14 @@
 package ru.yandex.incoming34.test_task_for_employment.service;
 
-import com.fasterxml.jackson.databind.JsonNode;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import ru.yandex.incoming34.test_task_for_employment.structures.Coordinates;
-import ru.yandex.incoming34.test_task_for_employment.structures.ServiceAMessage;
 import ru.yandex.incoming34.test_task_for_employment.structures.AdaptedMessage;
+import ru.yandex.incoming34.test_task_for_employment.structures.ServiceAMessage;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.net.HttpURLConnection;
-import java.net.URL;
 import java.time.LocalDateTime;
-import java.util.*;
-
-import static ru.yandex.incoming34.test_task_for_employment.utils.Utils.findNode;
+import java.util.Optional;
+import java.util.Properties;
 
 @Service
 @AllArgsConstructor
@@ -24,12 +16,13 @@ public class MainService {
 
 
     private final Properties properties;
-    private final List<String> nodeList;
+    private final TemperatureProvider temperatureProvider;
     private final RestTemplate dummyRestTemplate = new RestTemplate();
-    private final ObjectMapper objectMapper = new ObjectMapper();
+
 
     public AdaptedMessage handleMessageFromServiceA(ServiceAMessage serviceAMessage) {
-        Optional<AdaptedMessage> adaptedMessageOptional = requestTemperature(serviceAMessage.getCoordinates())
+        Optional<AdaptedMessage> adaptedMessageOptional = temperatureProvider.requestTemperature(serviceAMessage.getCoordinates())
+
                 .map(temperature -> adaptMessage(serviceAMessage, temperature));
         adaptedMessageOptional.ifPresentOrElse(adaptedMessage -> {
             try {
@@ -43,46 +36,7 @@ public class MainService {
         return adaptedMessageOptional.get();
     }
 
-    private Optional<String> requestTemperature(Coordinates coordinates) {
-        HttpURLConnection connection = prepareConnection(coordinates);
-        InputStream responseStream;
-        JsonNode root;
-        try {
-            responseStream = connection.getInputStream();
-            root = objectMapper.readTree(responseStream);
-        } catch (Exception exception) {
-            throw new RuntimeException("Не удалось получить информацию о погоде");
-        } finally {
-            connection.disconnect();
-        }
-        return findNode(root, nodeList);
-    }
-
     private AdaptedMessage adaptMessage(ServiceAMessage serviceAMessage, String temperature) {
         return new AdaptedMessage(serviceAMessage.getMsg(), LocalDateTime.now(), temperature);
-    }
-
-    private HttpURLConnection prepareConnection(Coordinates coordinates) {
-        String request = new StringBuilder(properties.getProperty("apiHttp"))
-                .append("?")
-                .append("lat=")
-                .append(coordinates.getLatitude())
-                .append("&lon=")
-                .append(coordinates.getLongitude())
-                .append("&appid=")
-                .append(properties.getProperty("appId"))
-                .append("&lang=ru&")
-                .append("units=metric")
-                .toString();
-        URL url;
-        HttpURLConnection connection;
-        try {
-            url = new URL(request);
-            connection = (HttpURLConnection) url.openConnection();
-        } catch (IOException e) {
-            throw new RuntimeException("Не удалось подключиться к серверу - поставщику сведений о температуре");
-        }
-        connection.setRequestProperty("accept", "application/json");
-        return connection;
     }
 }
