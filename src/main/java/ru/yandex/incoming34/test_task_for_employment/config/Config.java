@@ -1,9 +1,11 @@
 package ru.yandex.incoming34.test_task_for_employment.config;
 
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import ru.yandex.incoming34.test_task_for_employment.service.OpenWeatherMapTemperatureProvider;
+import ru.yandex.incoming34.test_task_for_employment.service.TemperatureProvider;
 
 import java.util.List;
 import java.util.Properties;
@@ -41,6 +43,12 @@ public class Config {
         properties.setProperty("apiHttp", apiHttp);
         properties.setProperty("dummyUrl", dummyUrl);
         return properties;
+    }
+
+    @Bean(name = "TempProvider")
+    @ConditionalOnProperty(prefix = "app", name = "weather_provider", havingValue = "OpenWeatherMap")
+    public TemperatureProvider temperatureProvider(){
+        return new OpenWeatherMapTemperatureProvider(nodeList, properties());
     }
 
 }

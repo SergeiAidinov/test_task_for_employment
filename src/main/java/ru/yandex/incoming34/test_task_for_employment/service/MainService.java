@@ -1,6 +1,7 @@
 package ru.yandex.incoming34.test_task_for_employment.service;
 
 import lombok.AllArgsConstructor;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
 import ru.yandex.incoming34.test_task_for_employment.structures.AdaptedMessage;
@@ -16,6 +17,7 @@ public class MainService {
 
 
     private final Properties properties;
+    @Qualifier(value = "TempProvider")
     private final TemperatureProvider temperatureProvider;
     private final RestTemplate dummyRestTemplate = new RestTemplate();
 

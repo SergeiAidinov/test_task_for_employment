@@ -3,7 +3,6 @@ package ru.yandex.incoming34.test_task_for_employment.service;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.AllArgsConstructor;
-import org.springframework.stereotype.Service;
 import ru.yandex.incoming34.test_task_for_employment.structures.Coordinates;
 
 import java.io.IOException;
@@ -15,12 +14,10 @@ import java.util.Optional;
 import java.util.Properties;
 
 import static ru.yandex.incoming34.test_task_for_employment.utils.Utils.findNode;
-@Service
 @AllArgsConstructor
-public class OpenweathermapTemperatureProvider implements TemperatureProvider{
+public class OpenWeatherMapTemperatureProvider implements TemperatureProvider{
 
-
-    private final List<String> nodeList;
+    private List<String> nodeList;
     private final Properties properties;
     private final ObjectMapper objectMapper = new ObjectMapper();
 
