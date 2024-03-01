@@ -27,7 +27,6 @@ public class Config {
 
     @Bean
     public List<String> supportedlanguages(){
-
         return langList;
     }
 
